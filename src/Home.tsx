@@ -1,7 +1,7 @@
 import "./Home.css";
 import { useCallback, useEffect, useState } from "react";
 import { useSDK } from "@metamask/sdk-react";
-import { Card, Select, Text } from "@0xsequence/design-system";
+import { Button, Card, Select, Text } from "@0xsequence/design-system";
 import {
   arbitrumNova,
   arbitrumSepolia,
@@ -10,6 +10,7 @@ import {
   polygonAmoy,
 } from "viem/chains";
 import { numToHex } from "./numToHex";
+import { stringToHex } from "viem";
 
 const DEFAULT_NETWORK = arbitrumSepolia;
 
@@ -147,12 +148,14 @@ const Home = () => {
   }, [connecting, sdk]);
 
   const connectAndSign = useCallback(async () => {
-    if (isSigningMessage) {
+    if (isSigningMessage || !sdk) {
       return;
     }
+    setSignedMessage("");
     setIsSigningMessage(true);
     try {
-      const smsg = await sdk?.connectAndSign({ msg: "hello world" });
+      const msg = stringToHex("hello world");
+      const smsg = await sdk?.connectAndSign({ msg });
       setSignedMessage(smsg);
     } catch (err: unknown) {
       console.warn("failed to connect..", err);
@@ -171,6 +174,7 @@ const Home = () => {
     setIsSigningMessage(false);
     setSignedMessage("");
     setError("");
+    localStorage.clear();
     if (!sdk) {
       return;
     }
@@ -192,7 +196,9 @@ const Home = () => {
 
   return (
     <div className="space-children">
-      <h1>Metamask Starter - React</h1>
+      <h1>Telegram Metamask Starter - React</h1>
+      {window.location.href.includes("dev.") && <h3>(dev)</h3>}
+      {window.location.href.includes("localhost") && <h3>(localhost)</h3>}
       {connected ? (
         <>
           <Text
@@ -228,7 +234,8 @@ const Home = () => {
             />
           </div>
           <br />
-          <button onClick={disconnect}>Disconnect</button>
+          <Button onClick={connectAndSign} label="Sign Message" />
+          <Button onClick={disconnect} label="Disconnect" />
         </>
       ) : (
         <>
@@ -236,8 +243,7 @@ const Home = () => {
           <div
             className={`card ${isSigningMessage || connecting ? "faded" : ""}`}
           >
-            <button onClick={connect}>Connect</button>
-            <button onClick={connectAndSign}>Connect & Sign</button>
+            <Button onClick={connect} label="Connect" />
           </div>
         </>
       )}

@@ -5,12 +5,12 @@ import { ThemeProvider } from "@0xsequence/design-system";
 
 const App = () => {
   return (
-    <ThemeProvider>
+    <ThemeProvider prefersColorScheme>
       <MetaMaskProvider
-        debug={false}
+        debug={true}
         sdkOptions={{
           dappMetadata: {
-            name: "Example React Dapp",
+            name: "Telegram Metamask React Dapp",
             url: window.location.href,
           },
           infuraAPIKey: import.meta.env.VITE_INFURA_API_KEY,
