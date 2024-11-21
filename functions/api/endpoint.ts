@@ -147,8 +147,14 @@ export const onRequest: PagesFunction<IEnv> = async (ctx) => {
         }),
       });
     }
-    const r: { ok: boolean } = await (await fetch(url)).json();
-    return new Response("ok" in r && r.ok ? "Ok" : JSON.stringify(r, null, 2));
+    if (url) {
+      const r: { ok: boolean } = await (await fetch(url)).json();
+      return new Response(
+        "ok" in r && r.ok ? "Ok" : JSON.stringify(r, null, 2),
+      );
+    } else {
+      return new Response("Ok");
+    }
   } else {
     return new Response(
       JSON.stringify({ result: "no message in update" }, null, 2),
